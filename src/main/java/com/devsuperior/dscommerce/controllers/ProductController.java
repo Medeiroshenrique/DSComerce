@@ -43,4 +43,12 @@ public class ProductController{
                 .buildAndExpand(dto.getId()).toUri();
         return ResponseEntity.created(uri).body(dto);
     }
+
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id, @RequestBody ProductDTO dto){
+        //return "Hello World! Life is amazing with JESUS in charge!!! He saves, bro!!!";
+        dto = service.updateProduct(id, dto);
+        return ResponseEntity.ok(dto);//This is how to return the right HTTP code
+    }
 }

@@ -51,4 +51,12 @@ public class ProductController{
         dto = service.updateProduct(id, dto);
         return ResponseEntity.ok(dto);//This is how to return the right HTTP code
     }
+
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id){
+        //return "Hello World! Life is amazing with JESUS in charge!!! He saves, bro!!!";
+        service.deleteProduct(id);
+        return ResponseEntity.noContent().build();
+    }
 }

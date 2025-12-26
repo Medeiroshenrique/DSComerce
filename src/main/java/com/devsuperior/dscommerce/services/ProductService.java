@@ -6,8 +6,11 @@ import com.devsuperior.dscommerce.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Optional;
@@ -56,4 +59,11 @@ public class ProductService {
         entity.setPrice(entity.getPrice());
         entity.setImgUrl(dto.getImgUrl());
     }
+
+    @Transactional
+    public void deleteProduct(@PathVariable Long id){
+        //return "Hello World! Life is amazing with JESUS in charge!!! He saves, bro!!!";
+        repository.deleteById(id);
+    }
+
 }

@@ -3,6 +3,7 @@ package com.devsuperior.dscommerce.services;
 import com.devsuperior.dscommerce.dto.ProductDTO;
 import com.devsuperior.dscommerce.entities.Product;
 import com.devsuperior.dscommerce.repositories.ProductRepository;
+import com.devsuperior.dscommerce.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +24,8 @@ public class ProductService {
     @Transactional(readOnly = true)
     public ProductDTO findById(Long id){
         Optional<Product> result = repository.findById(id);  //gets the Id from the repository
-        Product product = result.get();  //stores the Id from the repository inside a product focusing on record it in an object later
+        Product product = result.orElseThrow(//stores the Id from the repository inside a product focusing on record it in an object later
+                ()-> new ResourceNotFoundException("This resource was not found!"));//Gets the attributes if found by id, else throws a personalized exception
 
         ProductDTO dto = new ProductDTO(product);  //saves it into a DTO object
         return dto;  //gives it to the controller

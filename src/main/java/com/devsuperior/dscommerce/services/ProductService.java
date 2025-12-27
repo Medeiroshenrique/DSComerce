@@ -3,12 +3,16 @@ package com.devsuperior.dscommerce.services;
 import com.devsuperior.dscommerce.dto.ProductDTO;
 import com.devsuperior.dscommerce.entities.Product;
 import com.devsuperior.dscommerce.repositories.ProductRepository;
+import com.devsuperior.dscommerce.services.exceptions.DatabaseException;
 import com.devsuperior.dscommerce.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,11 +52,16 @@ public class ProductService {
 
     @Transactional
     public ProductDTO updateProduct(Long id, ProductDTO dto){
+        try {
         Product entity = repository.getReferenceById(id);
         copyDtoTOEntity(dto, entity);
 
         entity = repository.save(entity);
         return new ProductDTO(entity);
+        }
+        catch (EntityNotFoundException e){
+            throw new ResourceNotFoundException("This resource was not found!");
+        }
     }
 
     private void copyDtoTOEntity(ProductDTO dto, Product entity){
@@ -62,10 +71,17 @@ public class ProductService {
         entity.setImgUrl(dto.getImgUrl());
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void deleteProduct(@PathVariable Long id){
+        if(!repository.existsById(id)){
+            throw new ResourceNotFoundException("This resource was not found!");
+        }
         //return "Hello World! Life is amazing with JESUS in charge!!! He saves, bro!!!";
-        repository.deleteById(id);
+        try {
+            repository.deleteById(id);
+        }catch(DataIntegrityViolationException e){
+            throw new DatabaseException("Failure of referential integrity!");
+        }
     }
 
 }
